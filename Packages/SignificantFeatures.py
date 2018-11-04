@@ -1,4 +1,4 @@
-__title__   =  'DPT graph based feature detector'
+__title__   =  'DPT graphical feature detector'
 __author__  =  'Carel van Niekerk'
 __contact__ =  'vniekerk.carel@gmail.com'
 __date__    =  '2018-07-30'
@@ -49,20 +49,3 @@ class SignificantFeatures:
 		self.IsSig = self.Map >= self.Significance[Threshold]
 		self.IsSig = np.where(self.IsSig)
 		return self.IsSig
-
-    # Function which extracts the beta % smallest pulses which contain atleast
-	# one of the most significant pixels
-	def SigPulses(self, beta: float):
-		N = int(self.RP.Image.shape[0] * self.RP.Image.shape[1] * beta)
-		if N > 20: N = 20
-
-		Pulses = self.RP.Extract_Pulses_ofscales(range(N))
-		return Pulses
-
-#%% Feature detection implementation function
-def DPTFeatures(Image: np.array, Neigh: list, alpha: float, beta: float):
-	SigFeats = SignificantFeatures(RP_DPT(Image, Neigh))
-	SigFeatures = SigFeats.SigFeats(alpha)
-	PulseMap = SigFeats.SigPulses(beta)
-
-	return (SigFeatures, PulseMap)
