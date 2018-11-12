@@ -4,7 +4,7 @@ __copyright__ = "Copyright 2017, The University of Pretoria"
 __version__ = "0.0.2"
 __maintainer__ = "Carel van Niekerk"
 __email__ = "vniekerk.carel@gmail.com"
-__status__ = "Beta"
+__status__ = "1.0"
 
 # Import Packages required
 import numpy as np
@@ -29,7 +29,7 @@ class WorkingGraph:
         self.Scale = {'0' : np.inf}
         self.Neighbours = {'0' : set()}
         self.Pulses = {'0' : set()}
-           
+
     # Function to add a single node to the graph. (This function has
     # compulsory parameter value, which is the value of the node added. The
     # function also has parameters with default values, scale, neighbours
@@ -44,7 +44,7 @@ class WorkingGraph:
         self.Scale.update({ID : Scale})
         self.Neighbours.update({ID : Neighbours})
         self.Pulses.update({ID : Pulses})
-    
+
     # Function to add multiple nodes to the graph. (This function has
     # compulsory parameter Values, which is an array of values of the nodes
     # added. The function also has parameters with default values, scale,
@@ -55,7 +55,7 @@ class WorkingGraph:
         if not np.array(Pulses).any(): Pulses = [None] * len(Values)
         [self.add_node(Values[n], Scales[n], Neighbours[n], Pulses[n])
         for n in range(len(Values))]
-    
+
     # Function to add a single edge to the graph. (This function has two
     # compulsory parameters, the ID's of the two nodes joined by the edge.)
     def add_edge(self, node1, node2):
@@ -64,7 +64,7 @@ class WorkingGraph:
             # Add the nodes to one anothers lists of neighbours.
             self.Neighbours[str(node1)].update([node2])
             self.Neighbours[str(node2)].update([node1])
-    
+
     # Function to add multiple edges to the graph. (This function has two
     # compulsory parameters, the lists of edge tuples to be added to the
     # graph, where each tuple contains the ID's of the nodes to be joined by
@@ -73,7 +73,7 @@ class WorkingGraph:
         # Use a list comprehension together with the add_edge function to add
         # all the edges in the list.
         [self.add_edge(edge[0], edge[1]) for edge in edges]
-    
+
     # Function to add new virtual edge from a node to a pulse in the pulse
     # graph. (This function has two compulsory parameters, the ID of the node
     # and the ID df the pulse in the Pulse graph.)
@@ -81,7 +81,7 @@ class WorkingGraph:
         # Add the pulse ID to the set of pulses in the pulse dictionary under
         # the desired node.
         self.Pulses[str(ID)].update([pulse])
-    
+
     # Function to add new virtual edges. (This function has two compulsory
     # parameters, the list of ID's of the nodes and the list of corresponding
     # IDs of the pulses in the Pulse graph.)
@@ -89,7 +89,7 @@ class WorkingGraph:
         # Use a list comprehension together with the add_pulse function to add
         # all the pulses in the lists.
         [self.add_pulse(ID[n], pulses[n]) for n in range(len(ID))]
-    
+
     # Function to delete a node from the graph. (This function only requires
     # the ID of the node to be removed.)
     def del_node(self, ID):
@@ -102,7 +102,7 @@ class WorkingGraph:
         for node in self.Neighbours[str(ID)]:
             self.Neighbours[str(node)].remove(ID)
         del self.Neighbours[str(ID)]
-    
+
     # Function to combine two nodes in the working graph. (This function has
     # two compulsory parameters, the ID's of the two nodes to be joined.
     # The node created by combining the two nodes will be stored at ID1 and
@@ -132,7 +132,7 @@ class PulseGraph:
         self.Value = {}
         self.Scale = {}
         self.Neighbours = {}
-           
+
     # Function to add a single node to the graph. (This function has
     # compulsory parameter value, which is the value of the node added. The
     # function also has parameters with default values, scale and neighbours
@@ -146,7 +146,7 @@ class PulseGraph:
         self.Value.update({ID : Value})
         self.Scale.update({ID : Scale})
         self.Neighbours.update({ID : Neighbours})
-        
+
     # Function to add multiple nodes to the graph. (This function has
     # compulsory parameter Values, which is an array of values of the nodes
     # added. The function also has parameters with default values, scale
@@ -156,7 +156,7 @@ class PulseGraph:
         if not np.array(Neighbours).any(): Neighbours = [None] * len(Values)
         [self.add_node(Values[n], Scales[n], Neighbours[n])
         for n in range(len(Values))]
-    
+
     # Function to add a single edge to the graph. (This function has two
     # compulsory parameters, the ID's of the two nodes joined by the edge.)
     def add_edge(self, node1, node2):
@@ -165,7 +165,7 @@ class PulseGraph:
             # Add the nodes to one anothers lists of neighbours.
             self.Neighbours[str(node1)].update([node2])
             self.Neighbours[str(node2)].update([node1])
-    
+
     # Function to add multiple edges to the graph. (This function has two
     # compulsory parameters, the lists of edge tuples to be added to the
     # graph, where each tuple contains the ID's of the nodes to be joined by

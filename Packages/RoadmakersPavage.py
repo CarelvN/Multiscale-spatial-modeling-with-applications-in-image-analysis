@@ -5,7 +5,7 @@ __copyright__ = "Copyright 2017, The University of Pretoria"
 __version__ = "0.2.0"
 __maintainer__ = "Carel van Niekerk"
 __email__ = "vniekerk.carel@gmail.com"
-__status__ = "Beta"
+__status__ = "1.0"
 
 # Import Packages required
 import numpy as np

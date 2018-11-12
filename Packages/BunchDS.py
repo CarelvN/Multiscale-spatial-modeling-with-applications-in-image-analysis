@@ -9,15 +9,13 @@ __version__ =  1.0
 import numpy as np
 from skimage.util.shape import view_as_windows
 from scipy.spatial.distance import cdist
-from SSIM import StrucDist
 
 #%% Define Class
 class Bunch_DS:
-	def __init__(self, Image_Train: np.array, Sampling_Grid: np.array, method: str):
+	def __init__(self, Image_Train: np.array, Sampling_Grid: np.array):
 		self.TrainImg = Image_Train.copy()
 		self.SampGrid = Sampling_Grid.copy()
 		self.Matches = list()
-		self.method = method
 
 	def Create_Windows(self):
 		self.TI_Windows = view_as_windows(self.TrainImg, self.window)
@@ -26,14 +24,9 @@ class Bunch_DS:
 		self.indmat = np.arange(len(self.TIW_ind))
 		self.indmat = self.indmat.reshape(self.TI_Windows.shape[:2])
 
-	def Compare(self, ind: int, SGWin: np.array, Neigh: np.array):
-		Twin = self.TI_Windows[self.TIW_ind[ind]]
-		if self.method == 'Euclid':
-			Dist = float(cdist(SGWin[Neigh].reshape(1,-1)/255,
-						  Twin[Neigh].reshape(1,-1)/255)) / np.sqrt(Neigh.sum())
-		if self.method == 'SSIM':
-			SGWin[~Neigh] = Twin[~Neigh]
-			Dist = StrucDist(SGWin, Twin)
+	def Compare(self, Twin: np.array, SGWin: np.array, Neigh: np.array):
+		Dist = float(cdist(SGWin[Neigh].reshape(1,-1)/255,
+					    Twin[Neigh].reshape(1,-1)/255)) / np.sqrt(Neigh.sum())
 		return Dist
 
 	def Simulate_Window(self, index: tuple, max_ite: int, t: float):
@@ -42,23 +35,24 @@ class Bunch_DS:
 		SGWin = self.SampGrid[tuple(indices)]
 		if 999 in SGWin:
 			Neigh = (SGWin != 999)
-			self.min = np.inf
+			min = np.inf
 			for ind in np.random.choice(len(self.TIW_ind), max_ite):
-				Dist = self.Compare(ind, SGWin, Neigh)
-				if Dist < self.min:
-					self.TWin_min = self.TI_Windows[self.TIW_ind[ind]]
-					self.min = Dist
-					self.TWin_index = ind
+				Twin = self.TI_Windows[self.TIW_ind[ind]]
+				Dist = self.Compare(Twin, SGWin, Neigh)
+				if Dist < min:
+					TWin_min = Twin
+					min = Dist
+					TWin_index = ind
 				if Dist < t: break
-			row_col = np.where(self.indmat == self.TWin_index)
+			row_col = np.where(self.indmat == TWin_index)
 			N = np.where(~Neigh)
 			Node = np.concatenate(((index[0] + N[0]).reshape(-1,1),
 												  (index[1] + N[1]).reshape(-1,1),
 												  (N[0] + row_col[0]).reshape(-1,1),
 												  (N[1] + row_col[1]).reshape(-1,1),
-												 np.full(N[0].shape, self.min).reshape(-1,1)),1)
+												 np.full(N[0].shape, min).reshape(-1,1)),1)
 			self.Matches += Node.tolist()
-			self.SampGrid[indices[0][~Neigh], indices[1][~Neigh]] = self.TWin_min[~Neigh]
+			self.SampGrid[indices[0][~Neigh], indices[1][~Neigh]] = TWin_min[~Neigh]
 
 	def Simulate(self, t: float, f: float, window_size: int):
 		self.window = (window_size, window_size)
